@@ -7,7 +7,7 @@
  * Tailwind exposes each as a utility (bg-surface, text-ink-2, rounded-lg, shadow-2…)
  * and as a CSS variable (--color-accent…).
  */
-@theme {
+@theme static {
   --color-*: initial;
   --color-white: #ffffff;
   --color-transparent: transparent;
@@ -149,6 +149,9 @@
     }
   }
 }
+
+/* Styles that apply when the playground runs in its phone layout (set via data-device). */
+@custom-variant lab-mobile (&:where([data-device='mobile'] *));
 
 @layer base {
   html,

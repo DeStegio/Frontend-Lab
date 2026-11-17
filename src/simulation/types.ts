@@ -75,9 +75,10 @@ export type SimulationStats = {
   inFlight: number;
   /** Sum of durations of settled calls, for the average. */
   totalDurationMs: number;
-  /** Stress actions requested vs. physically executed (the rest is simulated). */
+  /** Stress actions requested, physically executed so far, and only counted (over the cap). */
   requestedActions: number;
   executedActions: number;
+  simulatedActions: number;
 };
 
 export type SimulationSnapshot = {
