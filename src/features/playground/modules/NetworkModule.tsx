@@ -1,31 +1,27 @@
 import { Wifi } from 'lucide-react';
-import { useId } from 'react';
-import { RangeField } from '@/components/ui/RangeField';
-import { Switch } from '@/components/ui/Switch';
+import { ToyFader, ToySwitch } from '@/components/toy/toy';
 import { useEngine, useSimulation } from '@/simulation/adapters/hooks';
 import { formatSeconds, GROUP_DEFAULTS, isGroupModified, levels } from '@/simulation/conditions';
-import { ControlCard, ControlLabel, ControlRow } from './ControlCard';
+import { Module } from './Module';
 
-export function NetworkControls({ className }: { className?: string }) {
+export function NetworkModule() {
   const engine = useEngine();
   const config = useSimulation((s) => s.config);
   const { latencyMs, offline, failurePercent } = config.network;
   const lv = levels(config);
-  const offlineId = useId();
   const hot = offline || lv.latency === 'hot' || lv.failure === 'hot';
 
   return (
-    <ControlCard
-      className={className}
+    <Module
       title="Network"
-      subtitle="How the server answers"
-      glyph="net"
-      icon={<Wifi size={16} />}
-      state={hot ? 'hot' : isGroupModified(config, 'network') ? 'mod' : 'flat'}
+      tagline="How the server answers"
+      tone="sky"
+      icon={<Wifi size={15} strokeWidth={2.8} />}
+      state={hot ? 'hot' : isGroupModified(config, 'network') ? 'mod' : 'ok'}
       onReset={() => engine.setConfig(GROUP_DEFAULTS.network)}
       resetLabel="Reset network controls"
     >
-      <RangeField
+      <ToyFader
         label="Latency"
         min={0}
         max={60}
@@ -34,18 +30,8 @@ export function NetworkControls({ className }: { className?: string }) {
         onChange={(s) => engine.setConfig({ network: { latencyMs: s * 1000 } })}
         display={latencyMs === 0 ? 'instant' : formatSeconds(latencyMs)}
         level={lv.latency}
-        ticks={['0 s', '10 s', '30 s', '60 s']}
       />
-      <ControlRow>
-        <ControlLabel htmlFor={offlineId} label="Offline" hint="Every request fails at once" />
-        <Switch
-          id={offlineId}
-          tone="danger"
-          checked={offline}
-          onCheckedChange={(v) => engine.setConfig({ network: { offline: v } })}
-        />
-      </ControlRow>
-      <RangeField
+      <ToyFader
         label="Request failure"
         min={0}
         max={100}
@@ -54,8 +40,14 @@ export function NetworkControls({ className }: { className?: string }) {
         onChange={(v) => engine.setConfig({ network: { failurePercent: v } })}
         display={`${failurePercent}%`}
         level={lv.failure}
-        ticks={['0%', '50%', '100%']}
       />
-    </ControlCard>
+      <ToySwitch
+        label="Offline"
+        hint="Unplug the cable"
+        danger
+        checked={offline}
+        onCheckedChange={(v) => engine.setConfig({ network: { offline: v } })}
+      />
+    </Module>
   );
 }

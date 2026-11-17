@@ -1,6 +1,6 @@
 import { X } from 'lucide-react';
 import { useEffect, useRef } from 'react';
-import { Button } from '@/components/ui/Button';
+import { ToyButton } from '@/components/toy/toy';
 
 type MobileSheetProps = {
   open: boolean;
@@ -41,22 +41,22 @@ export function MobileSheet({ open, onClose, subtitle, children }: MobileSheetPr
       // A click on the backdrop lands on the dialog element itself.
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="sticky top-0 z-2 flex items-center gap-2.5 bg-paper px-0.5 pt-5 pb-2">
+      <div className="sticky top-0 z-2 flex items-center gap-2.5 bg-cream px-0.5 pt-5 pb-2">
         <span
           aria-hidden="true"
           className="absolute top-2 left-1/2 h-1 w-10 -translate-x-1/2 rounded-sm bg-[#C3C8D3]"
         />
         <div className="flex-1">
-          <h2 id="sheet-title" className="m-0 text-[17px] font-extrabold">
+          <h2 id="sheet-title" className="m-0 font-toy text-[18px] font-black uppercase">
             Lab controls
           </h2>
-          <p className="mt-0.5 mb-0 text-xs font-medium text-ink-3">{subtitle}</p>
+          <p className="mt-0.5 mb-0 font-pixel text-[10px] text-toy-ink-2 uppercase">{subtitle}</p>
         </div>
-        <Button icon onClick={onClose} aria-label="Close controls" className="size-11">
+        <ToyButton onClick={onClose} aria-label="Close controls" className="size-11 px-0">
           <X size={18} aria-hidden="true" />
-        </Button>
+        </ToyButton>
       </div>
-      {open && <div className="flex flex-col gap-3">{children}</div>}
+      {open && <div className="flex flex-col gap-4">{children}</div>}
     </dialog>
   );
 }

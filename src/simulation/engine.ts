@@ -2,6 +2,7 @@ import { DEFAULT_CONFIG, mergeConfig, sanitizeConfig } from './config';
 import { createRng, hashSeed } from './rng';
 import type {
   DeepPartial,
+  Flight,
   HttpMethod,
   LogEntry,
   LogKind,
@@ -111,6 +112,7 @@ export class SimulationEngine {
   private nextId = 1;
   private stats = emptyStats();
   private log: LogEntry[] = [];
+  private flights: readonly Flight[] = [];
   private pending = new Map<number, Pending>();
   private tasks = new Map<number, unknown>();
   private listeners = new Set<() => void>();
@@ -135,6 +137,7 @@ export class SimulationEngine {
       generation: this.generation,
       stats: { ...this.stats },
       log: this.log,
+      flights: this.flights,
     };
     return this.snapshot;
   };
@@ -223,6 +226,7 @@ export class SimulationEngine {
       for (let i = 1; i < calls; i++) if (!rng.chance(failP)) shadowOk++;
     }
 
+    this.flights = [...this.flights, { id, method, path, startedAt, durationMs, calls }];
     this.bump({ sent: calls, inFlight: calls });
 
     return new Promise<SimResponse<T>>((resolve, reject) => {
@@ -231,6 +235,7 @@ export class SimulationEngine {
         if (!p) return;
         this.clock.clearTimeout(p.handle);
         this.pending.delete(id);
+        this.land(id);
         this.bump({ inFlight: -calls, cancelled: calls });
         this.pushLogRow(method, path, 'cancelled', 'cancel', this.clock.now() - startedAt);
         reject(abortError());
@@ -240,6 +245,7 @@ export class SimulationEngine {
 
       const handle = this.clock.setTimeout(() => {
         this.pending.delete(id);
+        this.land(id);
         detach();
         const okCalls = (outcome === 'ok' ? 1 : 0) + shadowOk;
         this.bump({
@@ -345,6 +351,7 @@ export class SimulationEngine {
   reset(): void {
     const pending = [...this.pending.values()];
     this.pending.clear();
+    this.flights = [];
     for (const handle of this.tasks.values()) this.clock.clearTimeout(handle);
     this.tasks.clear();
 
@@ -371,6 +378,7 @@ export class SimulationEngine {
   dispose(): void {
     const pending = [...this.pending.values()];
     this.pending.clear();
+    this.flights = [];
     for (const handle of this.tasks.values()) this.clock.clearTimeout(handle);
     this.tasks.clear();
     for (const p of pending) {
@@ -381,6 +389,10 @@ export class SimulationEngine {
   }
 
   // ---------- internals ----------
+
+  private land(id: number): void {
+    this.flights = this.flights.filter((f) => f.id !== id);
+  }
 
   private bump(delta: Partial<SimulationStats>): void {
     const s = { ...this.stats };
