@@ -3,10 +3,10 @@ import { SiteFooter } from '@/components/layout/SiteFooter';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SkipLink } from '@/components/layout/SkipLink';
 
-/** Marketing pages: sticky header, centered content, footer. */
+/** Marketing pages: sticky header, toy-dotted ground, footer. */
 export function SiteLayout() {
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="toy-dots min-h-screen font-toy text-toy-ink">
       <SkipLink />
       <SiteHeader />
       <main id="main">
