@@ -54,10 +54,10 @@ export function DetailsPanel({ device, renderedCards, totalItems, onClose }: Det
       aria-label="Technical details"
       onKeyDown={(e) => e.key === 'Escape' && onClose()}
       className={cn(
-        'absolute z-20 flex animate-tin flex-col overflow-hidden rounded-lg border border-diag-line bg-ink text-diag-text shadow-3',
-        device === 'desktop' && 'inset-x-6 bottom-[88px] max-h-[min(420px,52%)]',
-        device === 'tablet' && 'inset-x-4 top-[560px] max-h-[420px]',
-        device === 'mobile' && 'inset-x-2.5 bottom-[76px] max-h-[62%]',
+        'absolute z-20 flex animate-pop flex-col overflow-hidden rounded-[18px] border-[2.5px] border-toy-ink bg-ink text-diag-text shadow-[0_6px_0_var(--color-toy-ink)]',
+        device === 'desktop' && 'inset-x-5 bottom-[18px] max-h-[min(440px,55%)]',
+        device === 'tablet' && 'inset-x-4 top-[600px] max-h-[440px]',
+        device === 'mobile' && 'inset-x-2.5 bottom-[70px] max-h-[62%]',
       )}
     >
       <div className="flex items-center gap-2.5 border-b border-diag-line py-3 pr-3 pl-4">

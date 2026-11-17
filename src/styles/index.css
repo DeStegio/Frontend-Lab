@@ -1,11 +1,14 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/manrope';
 @import '@fontsource-variable/jetbrains-mono';
+@import '@fontsource-variable/rubik';
+@import '@fontsource/silkscreen/400.css';
 
 /*
- * Design tokens: mirror "Design system · 01 Tokens".
- * Tailwind exposes each as a utility (bg-surface, text-ink-2, rounded-lg, shadow-2…)
- * and as a CSS variable (--color-accent…).
+ * Two palettes:
+ * - Store tokens (paper, ink, accent, mint, amber, coral…): the Demo Store, a deliberately
+ *   ordinary web shop and the specimen under test.
+ * - Toy tokens (cream, toy-ink, tomato, sun, sky, grape, leaf, bubble): the arcade lab around it.
  */
 @theme static {
   --color-*: initial;
@@ -60,6 +63,28 @@
   --color-diag-bad: #ff9c9c;
   --color-diag-off: #ffd487;
 
+  /* Toy lab palette. Every candy color carries ink text at 4.5:1 or better. */
+  --color-cream: #fff1d6;
+  --color-cream-2: #ffe4b0;
+  --color-toy-paper: #fffcf5;
+  --color-toy-ink: #1d1433;
+  --color-toy-ink-2: #4a3f63;
+  --color-toy-ink-3: #5f5579;
+  --color-tomato: #ff5b4a;
+  --color-tomato-dark: #b5281a;
+  --color-tomato-soft: #ffd9d2;
+  --color-sun: #ffc83d;
+  --color-sun-soft: #fff0c2;
+  --color-sky: #46b6ff;
+  --color-sky-soft: #d6eeff;
+  --color-grape: #a98bff;
+  --color-grape-soft: #ece4ff;
+  --color-leaf: #36d69a;
+  --color-leaf-soft: #d2f7e8;
+  --color-bubble: #ff8cc6;
+  --color-bubble-soft: #ffe0f0;
+  --color-led: #1d1433;
+
   --radius-xs: 6px;
   --radius-sm: 8px;
   --radius-md: 12px;
@@ -73,6 +98,8 @@
 
   --font-sans: 'Manrope Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --font-toy: 'Rubik Variable', ui-rounded, system-ui, sans-serif;
+  --font-pixel: 'Silkscreen', 'JetBrains Mono Variable', monospace;
 
   --ease-lab: cubic-bezier(0.2, 0.7, 0.2, 1);
 
@@ -90,6 +117,61 @@
   --animate-spin: spin 0.7s linear infinite;
   --animate-shimmer: shimmer 1.4s linear infinite;
   --animate-pulse-ring: pulse-ring 1.4s var(--ease-lab) infinite;
+  --animate-bob: bob 2.4s ease-in-out infinite;
+  --animate-wobble-1: wobble 0.9s ease-in-out infinite;
+  --animate-wobble-2: wobble 0.45s ease-in-out infinite;
+  --animate-wobble-3: wobble 0.22s ease-in-out infinite;
+  --animate-shake-hard: shake-hard 0.5s ease-in-out infinite;
+  --animate-pop: pop 0.45s var(--ease-lab) both;
+  --animate-countdown: countdown 0.5s var(--ease-lab) both;
+
+  @keyframes bob {
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+  @keyframes wobble {
+    25% {
+      transform: rotate(calc(var(--wobble, 0.4deg) * -1)) translateX(-0.5px);
+    }
+    75% {
+      transform: rotate(var(--wobble, 0.4deg)) translateX(0.5px);
+    }
+  }
+  @keyframes shake-hard {
+    0%,
+    100% {
+      transform: translate(0, 0) rotate(0);
+    }
+    20% {
+      transform: translate(-3px, 2px) rotate(-0.4deg);
+    }
+    40% {
+      transform: translate(3px, -2px) rotate(0.3deg);
+    }
+    60% {
+      transform: translate(-2px, -1px) rotate(-0.2deg);
+    }
+    80% {
+      transform: translate(2px, 2px) rotate(0.4deg);
+    }
+  }
+  @keyframes pop {
+    0% {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.12);
+    }
+  }
+  @keyframes countdown {
+    from {
+      opacity: 0;
+      transform: scale(2.2);
+    }
+  }
 
   @keyframes tin {
     from {
@@ -192,65 +274,260 @@
 
 /* Controls whose pseudo-elements and native parts can't be expressed with utilities. */
 @layer components {
-  .lab-switch {
-    appearance: none;
-    position: relative;
-    flex: none;
-    width: 42px;
-    height: 24px;
-    margin: 0;
-    border-radius: 999px;
-    background: var(--color-muted);
-    cursor: pointer;
-    transition: background 0.18s;
-  }
-  .lab-switch::after {
-    content: '';
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-    transition: transform 0.2s var(--ease-lab);
-  }
-  .lab-switch:checked {
-    background: var(--color-accent);
-  }
-  .lab-switch:checked::after {
-    transform: translateX(18px);
-  }
-  .lab-switch[data-tone='danger']:checked {
-    background: var(--color-coral-strong);
-  }
-  .lab-switch:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
-  }
-
-  .lab-range {
-    width: 100%;
-    height: 22px;
-    margin: 0;
-    cursor: pointer;
-    accent-color: var(--color-accent);
-  }
-  .lab-range[data-level='warn'] {
-    accent-color: var(--color-amber-strong);
-  }
-  .lab-range[data-level='hot'] {
-    accent-color: var(--color-coral-strong);
-  }
-
   .lab-skeleton {
     background: linear-gradient(90deg, #f0f2f5 0%, #e5e8ee 50%, #f0f2f5 100%);
     background-size: 200% 100%;
     animation: var(--animate-shimmer);
   }
 
-  .lab-dots {
-    background: var(--color-stage) radial-gradient(#d3d8e2 1px, transparent 1.2px) 0 0 / 20px 20px;
+}
+
+/*
+ * Toy primitives: chunky plastic with an ink outline and a hard "thickness" shadow that
+ * collapses when pressed, so buttons physically go down.
+ */
+@layer components {
+  .toy-surface {
+    border: 2.5px solid var(--color-toy-ink);
+    border-radius: 18px;
+    background: var(--color-toy-paper);
+    box-shadow: 0 5px 0 var(--color-toy-ink);
+  }
+
+  .toy-btn {
+    --toy-bg: var(--color-toy-paper);
+    --depth: 4px;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 42px;
+    padding: 0 16px;
+    border: 2.5px solid var(--color-toy-ink);
+    border-radius: 14px;
+    background: var(--toy-bg);
+    color: var(--color-toy-ink);
+    font: 700 14px/1 var(--font-toy);
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    text-decoration: none;
+    box-shadow: 0 var(--depth) 0 var(--color-toy-ink);
+    transition:
+      transform 0.08s,
+      box-shadow 0.08s,
+      background-color 0.15s;
+  }
+  .toy-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 calc(var(--depth) + 1px) 0 var(--color-toy-ink);
+  }
+  .toy-btn:active,
+  .toy-btn[aria-pressed='true'] {
+    transform: translateY(var(--depth));
+    box-shadow: 0 0 0 var(--color-toy-ink);
+  }
+  .toy-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 var(--depth) 0 var(--color-toy-ink);
+  }
+  .toy-btn[data-size='sm'] {
+    --depth: 3px;
+    height: 34px;
+    padding: 0 12px;
+    font-size: 13px;
+    border-radius: 11px;
+  }
+  .toy-btn[data-size='lg'] {
+    --depth: 6px;
+    height: 56px;
+    padding: 0 24px;
+    font-size: 17px;
+    border-radius: 18px;
+  }
+  .toy-btn[data-tone='tomato'] {
+    --toy-bg: var(--color-tomato);
+  }
+  .toy-btn[data-tone='sun'] {
+    --toy-bg: var(--color-sun);
+  }
+  .toy-btn[data-tone='sky'] {
+    --toy-bg: var(--color-sky);
+  }
+  .toy-btn[data-tone='grape'] {
+    --toy-bg: var(--color-grape);
+  }
+  .toy-btn[data-tone='leaf'] {
+    --toy-bg: var(--color-leaf);
+  }
+  .toy-btn[data-tone='bubble'] {
+    --toy-bg: var(--color-bubble);
+  }
+  .toy-btn[data-tone='ink'] {
+    --toy-bg: var(--color-toy-ink);
+    color: var(--color-cream);
+  }
+
+  /* Chunky fader on a native range input, so keyboard and screen readers keep working. */
+  .toy-fader {
+    --fader: var(--color-sky);
+    --fill: 0%;
+    appearance: none;
+    width: 100%;
+    height: 28px;
+    margin: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  .toy-fader::-webkit-slider-runnable-track {
+    height: 14px;
+    border: 2.5px solid var(--color-toy-ink);
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--fader) var(--fill), var(--color-cream-2) var(--fill));
+  }
+  .toy-fader::-moz-range-track {
+    height: 9px;
+    border: 2.5px solid var(--color-toy-ink);
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--fader) var(--fill), var(--color-cream-2) var(--fill));
+  }
+  .toy-fader::-webkit-slider-thumb {
+    appearance: none;
+    width: 26px;
+    height: 26px;
+    margin-top: -8.5px;
+    border: 2.5px solid var(--color-toy-ink);
+    border-radius: 9px;
+    background: var(--color-toy-paper);
+    box-shadow: 0 3px 0 var(--color-toy-ink);
+    transition: transform 0.1s;
+  }
+  .toy-fader::-moz-range-thumb {
+    width: 21px;
+    height: 21px;
+    border: 2.5px solid var(--color-toy-ink);
+    border-radius: 9px;
+    background: var(--color-toy-paper);
+    box-shadow: 0 3px 0 var(--color-toy-ink);
+  }
+  .toy-fader:active::-webkit-slider-thumb {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 var(--color-toy-ink);
+  }
+  .toy-fader:focus-visible {
+    outline: 3px solid var(--color-toy-ink);
+    outline-offset: 3px;
+    border-radius: 999px;
+  }
+  .toy-fader[data-level='warn'] {
+    --fader: var(--color-sun);
+  }
+  .toy-fader[data-level='hot'] {
+    --fader: var(--color-tomato);
+  }
+
+  .toy-switch {
+    appearance: none;
+    position: relative;
+    flex: none;
+    width: 54px;
+    height: 32px;
+    margin: 0;
+    border: 2.5px solid var(--color-toy-ink);
+    border-radius: 999px;
+    background: var(--color-cream-2);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .toy-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 23px;
+    height: 23px;
+    border: 2.5px solid var(--color-toy-ink);
+    border-radius: 50%;
+    background: var(--color-toy-paper);
+    transition: transform 0.18s var(--ease-lab);
+  }
+  .toy-switch:checked {
+    background: var(--color-leaf);
+  }
+  .toy-switch[data-tone='danger']:checked {
+    background: var(--color-tomato);
+  }
+  .toy-switch:checked::after {
+    transform: translateX(22px);
+  }
+  .toy-switch:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  /* Dark LED readout panel. */
+  .led {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 64px;
+    height: 26px;
+    padding: 0 8px;
+    border-radius: 8px;
+    background: var(--color-led);
+    color: var(--color-leaf);
+    font: 400 12px/1 var(--font-pixel);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    box-shadow: inset 0 2px 0 rgba(0, 0, 0, 0.35);
+    transition: color 0.2s;
+  }
+  .led[data-level='warn'] {
+    color: var(--color-sun);
+  }
+  .led[data-level='hot'] {
+    color: #ff8a7d;
+  }
+
+  /* Hazard tape for chaos. */
+  .hazard {
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--color-sun) 0 14px,
+      var(--color-toy-ink) 14px 28px
+    );
+  }
+
+  .toy-dots {
+    background: var(--color-cream) radial-gradient(rgba(29, 20, 51, 0.13) 1.2px, transparent 1.4px)
+      0 0 / 22px 22px;
+  }
+}
+
+/* Decorative packets on the landing hero's wire. */
+@layer components {
+  .hero-packet {
+    left: 0;
+    animation: hero-travel 2.7s linear infinite;
+  }
+  @keyframes hero-travel {
+    from {
+      left: 0;
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    to {
+      left: calc(100% - 18px);
+      opacity: 0;
+    }
   }
 }

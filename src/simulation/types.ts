@@ -81,6 +81,17 @@ export type SimulationStats = {
   simulatedActions: number;
 };
 
+/** A request currently on the wire. The outcome is decided at start but only revealed on settle. */
+export type Flight = {
+  id: number;
+  method: HttpMethod;
+  path: string;
+  startedAt: number;
+  durationMs: number;
+  /** Primary call plus burst duplicates. */
+  calls: number;
+};
+
 export type SimulationSnapshot = {
   config: SimulationConfig;
   /** Bumped by reset. Anything started in an older generation is stale. */
@@ -88,4 +99,6 @@ export type SimulationSnapshot = {
   stats: SimulationStats;
   /** Newest first, bounded. */
   log: readonly LogEntry[];
+  /** In-flight requests, oldest first. */
+  flights: readonly Flight[];
 };

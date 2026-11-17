@@ -2,6 +2,7 @@ import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryRouter, RouterProvider } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { COUNTDOWN_STEP_MS } from './useLab';
 import { PlaygroundPage } from './PlaygroundPage';
 
 function setup() {
@@ -12,7 +13,13 @@ function setup() {
 
 const advance = (ms: number) => act(() => vi.advanceTimersByTimeAsync(ms));
 const status = () => screen.getAllByRole('status')[0]!;
-const activeList = () => screen.getByRole('list', { name: 'Active' });
+const conditionsList = () => screen.getByRole('list', { name: 'Active conditions' });
+const stickers = () =>
+  within(conditionsList())
+    .queryAllByRole('listitem')
+    .map((li) => li.textContent)
+    .filter((t) => t !== 'ALL CONDITIONS NORMAL');
+const incidentLog = () => screen.getByRole('log');
 
 beforeEach(() => {
   vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'Date'] });
@@ -22,24 +29,29 @@ afterEach(() => {
 });
 
 describe('Playground', () => {
-  it('starts idle with every control at default', async () => {
+  it('starts idle with every control at default and a happy server', async () => {
     setup();
     await advance(300);
     expect(status()).toHaveTextContent('Idle · normal conditions');
-    expect(within(activeList()).getByText(/Nothing modified/)).toBeInTheDocument();
+    expect(stickers()).toEqual([]);
     expect(screen.getByRole('button', { name: 'Calm' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('img', { name: 'Server mood: happy' })).toBeInTheDocument();
+    expect(within(incidentLog()).getByText(/Lab online\. Seed \d+/)).toBeInTheDocument();
   });
 
-  it('applies a preset, lists its condition and removes it from the dock', async () => {
+  it('applies a preset, shows a sticker, narrates it, and removes it from the screen', async () => {
     const user = setup();
     await advance(300);
     await user.click(screen.getByRole('button', { name: 'Slow network' }));
     expect(status()).toHaveTextContent('1 condition active');
-    expect(within(activeList()).getByText('latency 6 s')).toBeInTheDocument();
+    expect(stickers()).toEqual(['latency 6 s']);
     expect(screen.getByRole('slider', { name: 'Latency' })).toHaveAttribute(
       'aria-valuetext',
       '6 s',
     );
+    expect(screen.getByRole('img', { name: 'Server mood: snoozing' })).toBeInTheDocument();
+    await advance(1); // the log is fed by an engine subscription, one tick behind
+    expect(within(incidentLog()).getAllByRole('listitem')[0]).toHaveTextContent('(6 s)');
 
     await user.click(screen.getByRole('button', { name: 'Remove latency' }));
     expect(screen.getByRole('slider', { name: 'Latency' })).toHaveAttribute(
@@ -55,28 +67,37 @@ describe('Playground', () => {
     offline.focus();
     await user.keyboard(' ');
     expect(offline).toBeChecked();
-    expect(within(activeList()).getByText('offline')).toBeInTheDocument();
+    expect(stickers()).toEqual(['offline']);
+    expect(screen.getByRole('img', { name: 'Server mood: unplugged' })).toBeInTheDocument();
   });
 
-  it('engages chaos reproducibly from the seed and calms down to a clean slate', async () => {
+  it('counts down, engages chaos reproducibly from the seed, and calms down', async () => {
     const user = setup();
     await advance(300);
     await user.click(screen.getByRole('button', { name: 'Engage chaos' }));
+    expect(screen.getByText('3')).toBeInTheDocument();
+    await advance(COUNTDOWN_STEP_MS * 3 + 50);
     expect(status()).toHaveTextContent(/^Chaos mode/);
-    const first = within(activeList())
-      .getAllByRole('listitem')
-      .map((li) => li.textContent);
+    expect(screen.getByRole('img', { name: 'Server mood: losing it' })).toBeInTheDocument();
+    const first = stickers();
     expect(first.length).toBeGreaterThan(3);
 
     await user.click(screen.getByRole('button', { name: 'Calm it down' }));
     expect(status()).toHaveTextContent('Idle');
 
     await user.click(screen.getByRole('button', { name: 'Engage chaos' }));
-    const second = within(activeList())
-      .getAllByRole('listitem')
-      .map((li) => li.textContent);
-    expect(second).toEqual(first);
+    await advance(COUNTDOWN_STEP_MS * 3 + 50);
+    expect(stickers()).toEqual(first);
     await user.click(screen.getByRole('button', { name: 'Calm it down' }));
+  });
+
+  it('reset during the countdown cancels chaos', async () => {
+    const user = setup();
+    await advance(300);
+    await user.click(screen.getByRole('button', { name: 'Engage chaos' }));
+    await user.click(screen.getByRole('button', { name: 'Reset all conditions' }));
+    await advance(COUNTDOWN_STEP_MS * 4);
+    expect(status()).toHaveTextContent('Idle · normal conditions');
   });
 
   it('runs rapid clicks through the cart', async () => {
@@ -119,12 +140,16 @@ describe('Playground', () => {
     await user.click(screen.getByRole('button', { name: 'Reset all conditions' }));
     expect(screen.getByText(/Fresh start\./)).toBeInTheDocument();
     expect(status()).toHaveTextContent('Idle · normal conditions');
-    expect(within(activeList()).getByText(/Nothing modified/)).toBeInTheDocument();
+    expect(stickers()).toEqual([]);
+    await advance(1);
+    expect(
+      within(incidentLog()).getByText(/Extinguisher deployed|Fresh start\. Smells/),
+    ).toBeInTheDocument();
 
     // Neither the rest of the click run nor the pending requests may touch the fresh state.
     await advance(10_000);
     expect(screen.getByRole('button', { name: 'Cart, 0 items' })).toBeInTheDocument();
-    expect(screen.queryByText(/Fresh start\./)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Fresh start\. Conditions/)).not.toBeInTheDocument();
   });
 
   it('opens technical details and closes them with Escape', async () => {
