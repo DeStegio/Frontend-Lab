@@ -67,6 +67,8 @@ export function ProductGrid({
     0,
   );
   useEffect(() => onRenderedCountChange?.(rendered), [rendered, onRenderedCountChange]);
+  // Nothing is rendered once the grid unmounts (loading, error and empty states).
+  useEffect(() => () => onRenderedCountChange?.(0), [onRenderedCountChange]);
 
   return (
     <div

@@ -72,6 +72,7 @@ const emptyStats = (): SimulationStats => ({
   totalDurationMs: 0,
   requestedActions: 0,
   executedActions: 0,
+  simulatedActions: 0,
 });
 
 type Pending = { handle: unknown; fail: (error: unknown) => void };
@@ -320,7 +321,7 @@ export class SimulationEngine {
   runActions(total: number, intervalMs: number, action: (index: number) => void): ActionRun {
     const requested = Math.max(0, Math.floor(total));
     const executed = Math.min(requested, ENGINE_LIMITS.maxExecutedActions);
-    this.bump({ requestedActions: requested });
+    this.bump({ requestedActions: requested, simulatedActions: requested - executed });
 
     let index = 0;
     let cancelNext = () => {};

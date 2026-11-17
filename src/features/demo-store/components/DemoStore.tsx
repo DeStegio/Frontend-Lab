@@ -71,7 +71,7 @@ export function DemoStore({ store, scrollRef, onRenderedCountChange }: DemoStore
         <button
           type="button"
           aria-label={`Cart, ${state.cart} ${state.cart === 1 ? 'item' : 'items'}`}
-          className={cn(buttonClass({ size: 'sm' }), 'relative ml-auto @max-lg/store:h-10')}
+          className={cn(buttonClass({ size: 'sm' }), 'relative ml-auto pr-5 @max-lg/store:h-10')}
         >
           <ShoppingBag size={16} aria-hidden="true" />
           <span className="@max-lg/store:hidden">Cart</span>

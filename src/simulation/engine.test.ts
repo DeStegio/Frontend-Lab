@@ -283,6 +283,7 @@ describe('safety limits', () => {
     expect(engine.getSnapshot().stats).toMatchObject({
       requestedActions: 10_000,
       executedActions: ENGINE_LIMITS.maxExecutedActions,
+      simulatedActions: 10_000 - ENGINE_LIMITS.maxExecutedActions,
     });
   });
 
