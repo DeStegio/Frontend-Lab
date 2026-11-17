@@ -69,7 +69,7 @@ export function Module({
           >
             {title}
           </h2>
-          <p className="m-0 mt-0.5 truncate font-toy text-[11.5px] font-semibold text-toy-ink/80">
+          <p className="m-0 mt-0.5 truncate font-toy text-[11.5px] font-semibold text-toy-ink">
             {tagline}
           </p>
         </div>
