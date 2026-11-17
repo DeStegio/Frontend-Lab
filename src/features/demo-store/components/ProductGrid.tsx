@@ -15,8 +15,14 @@ type ProductGridProps = {
   onRenderedCountChange?: (count: number) => void;
 };
 
-/** Below this content width the store switches to two columns (phone-sized preview). */
-const TWO_COLUMN_BELOW = 500;
+/** Columns by the grid's own width, so cards keep a sensible size in any frame. */
+function columnsFor(width: number): number {
+  if (width < 500) return 2;
+  if (width < 880) return 3;
+  if (width < 1260) return 4;
+  if (width < 1600) return 5;
+  return 6;
+}
 const ROW_ESTIMATE = 330;
 
 /**
@@ -33,8 +39,8 @@ export function ProductGrid({
 }: ProductGridProps) {
   const gridRef = useRef<HTMLDivElement>(null);
   const width = useElementWidth(gridRef);
-  const narrow = width < TWO_COLUMN_BELOW;
-  const cols = narrow ? 2 : 3;
+  const cols = columnsFor(width);
+  const narrow = cols === 2;
   const pad = narrow ? 12 : 20;
   const gap = narrow ? 10 : 16;
   const rowCount = Math.ceil(products.length / cols);

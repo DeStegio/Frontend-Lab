@@ -291,3 +291,19 @@
   width: 92px;
   height: 92px;
 }
+
+/* ---------- expanded store: the screen takes the stage ---------- */
+
+[data-expanded] .lab-stage {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas: 'screen' 'lane';
+}
+[data-device='tablet'][data-expanded] .lab-stage {
+  grid-template-rows: auto;
+  grid-template-areas: 'screen' 'lane' 'modes';
+}
+[data-device='tablet'][data-expanded] .lab-screen {
+  height: calc(100dvh - 190px);
+  min-height: 560px;
+}
