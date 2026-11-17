@@ -47,6 +47,9 @@ function Playground() {
   const conditions = useMemo(() => activeConditions(config), [config]);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [expandedState, setExpanded] = useState(false);
+  // Phones already give the store the whole screen.
+  const expanded = expandedState && device !== 'mobile';
   const [renderedCards, setRenderedCards] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const toggleDetails = useCallback(() => setDetailsOpen((o) => !o), []);
@@ -65,6 +68,10 @@ function Playground() {
     <div
       data-device={device}
       data-chaos={config.chaos.enabled || undefined}
+      data-expanded={expanded || undefined}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape' && expanded && !detailsOpen) setExpanded(false);
+      }}
       className={cn(
         'flex flex-col bg-cream font-toy text-toy-ink',
         device === 'tablet' ? 'min-h-dvh' : 'h-dvh min-h-[640px] overflow-hidden',
@@ -84,6 +91,8 @@ function Playground() {
           device={device}
           conditions={conditions}
           scrollRef={scrollRef}
+          expanded={expanded}
+          onToggleExpanded={mobile ? undefined : () => setExpanded((x) => !x)}
         >
           <DemoStore store={store} scrollRef={scrollRef} onRenderedCountChange={setRenderedCards} />
         </Screen>
@@ -136,10 +145,14 @@ function Playground() {
         ) : (
           <>
             {device === 'tablet' && <Modes lab={lab} className="lab-modes" />}
-            <SidePanel incidents={incidents} />
-            <div role="region" aria-label="Control deck" className="lab-deck">
-              {deck}
-            </div>
+            {!expanded && (
+              <>
+                <SidePanel incidents={incidents} />
+                <div role="region" aria-label="Control deck" className="lab-deck">
+                  {deck}
+                </div>
+              </>
+            )}
           </>
         )}
 

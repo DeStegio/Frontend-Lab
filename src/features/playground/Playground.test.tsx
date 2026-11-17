@@ -152,6 +152,25 @@ describe('Playground', () => {
     expect(screen.queryByText(/Fresh start\. Conditions/)).not.toBeInTheDocument();
   });
 
+  it('expands the store to fill the stage and shrinks it back', async () => {
+    const user = setup();
+    await advance(300);
+    expect(screen.getByRole('region', { name: 'Control deck' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Expand store' }));
+    expect(screen.queryByRole('region', { name: 'Control deck' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Shrink store' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    // Quick modes and condition stickers stay usable while expanded.
+    await user.click(screen.getByRole('button', { name: 'Flaky API' }));
+    expect(stickers()).toContain('fail 40%');
+
+    await user.keyboard('{Escape}');
+    expect(screen.getByRole('region', { name: 'Control deck' })).toBeInTheDocument();
+  });
+
   it('opens technical details and closes them with Escape', async () => {
     const user = setup();
     await advance(300);
