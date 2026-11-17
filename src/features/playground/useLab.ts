@@ -14,7 +14,17 @@ import type { ChaosLevel } from '@/simulation/types';
 /** Rapid clicks hit Add to cart this often (interaction spec). */
 export const CLICK_INTERVAL_MS = 28;
 export const RESET_NOTE_MS = 2_800;
+/** 3, 2, 1, then chaos. */
+export const COUNTDOWN_STEP_MS = 500;
+export const SHAKE_MS = 1_500;
 const CLICK_TARGETS = 6;
+
+function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== 'undefined' &&
+    !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  );
+}
 
 /**
  * Lab-level actions: everything the controls do that is more than setting a value. All timers
@@ -25,6 +35,10 @@ export function useLab(store: DemoStore) {
   const generation = useSimulation((s) => s.generation);
   const { repeat, repeatEveryMs } = useSimulation((s) => s.config.stress);
   const [resetNote, setResetNote] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [shaking, setShaking] = useState(false);
+  /** Increments on every reset, to replay the extinguisher foam. */
+  const [foam, setFoam] = useState(0);
 
   // The latest store callbacks, for timers that outlive a render.
   const storeRef = useRef(store);
@@ -60,26 +74,49 @@ export function useLab(store: DemoStore) {
     return engine.every(() => storeRef.current.replayLastAction(), repeatEveryMs);
   }, [engine, repeat, repeatEveryMs, generation]);
 
+  const clearShow = () => {
+    setCountdown(null);
+    setShaking(false);
+  };
+
   const resetAll = useCallback(() => {
     engine.reset();
+    clearShow();
+    setFoam((n) => n + 1);
     setResetNote(true);
     engine.schedule(() => setResetNote(false), RESET_NOTE_MS);
   }, [engine]);
 
   const engageChaos = useCallback(
-    (level?: ChaosLevel) => {
-      const c = engine.getConfig();
-      const next = generateChaosConfig(c.chaos.seed, level ?? c.chaos.level);
-      engine.replaceConfig(next);
-      setResetNote(false);
-      storeRef.current.retry();
-      runClicks(next.stress.clickCount);
+    (level?: ChaosLevel, options: { instant?: boolean } = {}) => {
+      const go = () => {
+        const c = engine.getConfig();
+        const next = generateChaosConfig(c.chaos.seed, level ?? c.chaos.level);
+        engine.replaceConfig(next);
+        setCountdown(null);
+        setResetNote(false);
+        storeRef.current.retry();
+        runClicks(next.stress.clickCount);
+        if (!options.instant && !prefersReducedMotion()) {
+          setShaking(true);
+          engine.schedule(() => setShaking(false), SHAKE_MS);
+        }
+      };
+      if (options.instant || prefersReducedMotion()) return go();
+      setCountdown(3);
+      engine.schedule(() => setCountdown(2), COUNTDOWN_STEP_MS);
+      engine.schedule(() => setCountdown(1), COUNTDOWN_STEP_MS * 2);
+      engine.schedule(go, COUNTDOWN_STEP_MS * 3);
     },
     [engine, runClicks],
   );
 
-  /** Leaves chaos: same clean slate as Reset, without the "Fresh start" note. */
-  const calmDown = useCallback(() => engine.reset(), [engine]);
+  /** Leaves chaos: the same clean slate as Reset, without the "Fresh start" note. */
+  const calmDown = useCallback(() => {
+    engine.reset();
+    clearShow();
+    setFoam((n) => n + 1);
+  }, [engine]);
 
   const randomize = useCallback(() => {
     engine.replaceConfig(randomConfig(randomSeed(), engine.getConfig().chaos.level));
@@ -96,7 +133,18 @@ export function useLab(store: DemoStore) {
     [engine],
   );
 
-  return { runClicks, resetAll, engageChaos, calmDown, randomize, pickPreset, resetNote };
+  return {
+    runClicks,
+    resetAll,
+    engageChaos,
+    calmDown,
+    randomize,
+    pickPreset,
+    resetNote,
+    countdown,
+    shaking,
+    foam,
+  };
 }
 
 export type Lab = ReturnType<typeof useLab>;

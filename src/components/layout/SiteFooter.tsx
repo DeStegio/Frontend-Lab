@@ -1,28 +1,25 @@
 import { Link } from 'react-router';
 import { Logo } from '@/components/ui/Logo';
-import { cn } from '@/lib/cn';
 import { REPO_URL, ROUTES } from '@/lib/links';
 import { siteLinkClass } from './SiteHeader';
 
-const footLink = cn(siteLinkClass, 'h-8 text-[13.5px]');
-
 export function SiteFooter() {
   return (
-    <footer className="border-t border-line">
-      <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-6 px-4 py-7 site-md:px-10">
+    <footer className="border-t-[2.5px] border-toy-ink bg-cream">
+      <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-x-6 gap-y-3 px-4 py-7 site-md:px-10">
         <Logo />
-        <span className="text-[13px] text-ink-3">
-          Make the web misbehave. Designed and built by [Your name].
+        <span className="font-pixel text-[11px] text-toy-ink-2">
+          MAKE THE WEB MISBEHAVE · BUILT BY [YOUR NAME]
         </span>
         <div className="flex-1" />
         <nav aria-label="Footer" className="flex gap-1">
-          <Link className={footLink} to={ROUTES.playground}>
+          <Link className={siteLinkClass} to={ROUTES.playground}>
             Playground
           </Link>
-          <Link className={footLink} to={ROUTES.about}>
+          <Link className={siteLinkClass} to={ROUTES.about}>
             About
           </Link>
-          <a className={footLink} href={REPO_URL} target="_blank" rel="noreferrer">
+          <a className={siteLinkClass} href={REPO_URL} target="_blank" rel="noreferrer">
             GitHub
           </a>
         </nav>

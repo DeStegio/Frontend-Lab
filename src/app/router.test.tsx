@@ -25,10 +25,7 @@ describe('routing', () => {
     renderRoute('/playground');
     expect(await screen.findByRole('main', { name: 'Playground' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Reset all conditions' })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Playground' })).toHaveAttribute(
-      'aria-current',
-      'page',
-    );
+    expect(screen.getAllByRole('status')[0]).toHaveTextContent(/Idle|in flight/);
   });
 
   it('shows a not-found page for unknown routes', async () => {

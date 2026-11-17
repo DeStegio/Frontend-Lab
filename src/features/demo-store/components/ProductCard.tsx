@@ -74,6 +74,7 @@ export const ProductCard = memo(function ProductCard({
 
   return (
     <article
+      data-status={s}
       className={cn(
         'flex flex-col rounded-[14px] border bg-white transition-[box-shadow,border-color] duration-200 hover:shadow-2',
         failed ? 'border-coral-line' : 'border-[#EAECF1]',

@@ -305,6 +305,26 @@ describe('safety limits', () => {
   });
 });
 
+describe('flights', () => {
+  it('exposes in-flight requests and removes them on settle, abort and reset', async () => {
+    const engine = engineWith({ network: { latencyMs: 1_000 }, stress: { burst: 3 } });
+    void get(engine);
+    const controller = new AbortController();
+    get(engine, controller.signal).catch(() => {});
+    expect(engine.getSnapshot().flights).toHaveLength(2);
+    expect(engine.getSnapshot().flights[0]).toMatchObject({ method: 'GET', calls: 3 });
+
+    controller.abort();
+    expect(engine.getSnapshot().flights).toHaveLength(1);
+    await vi.advanceTimersByTimeAsync(2_000);
+    expect(engine.getSnapshot().flights).toHaveLength(0);
+
+    get(engine).catch(() => {});
+    engine.reset();
+    expect(engine.getSnapshot().flights).toHaveLength(0);
+  });
+});
+
 describe('observation', () => {
   it('batches notifications per microtask and keeps snapshots stable between changes', async () => {
     const engine = engineWith();
