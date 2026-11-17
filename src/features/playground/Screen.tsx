@@ -1,4 +1,5 @@
-import { Check, CircleAlert, MousePointer2, X } from 'lucide-react';
+import { Check, CircleAlert, Maximize2, Minimize2, MousePointer2, X } from 'lucide-react';
+import { ToyButton } from '@/components/toy/toy';
 import type { RefObject } from 'react';
 import type { Toast } from '@/features/demo-store/storeState';
 import type { DemoStore } from '@/features/demo-store/useDemoStore';
@@ -23,6 +24,9 @@ const stickerTone: Record<ConditionTone, string> = {
 };
 
 type ScreenProps = {
+  /** Whether the screen fills the stage; undefined hides the toggle (phones are already full). */
+  expanded?: boolean;
+  onToggleExpanded?: () => void;
   store: DemoStore;
   lab: Lab;
   device: Device;
@@ -36,7 +40,16 @@ type ScreenProps = {
  * around it carries the lab: live status, condition stickers, and the chaos hazard tape.
  * The store scrolls and overflows inside, so the lab around it never moves.
  */
-export function Screen({ store, lab, device, conditions, scrollRef, children }: ScreenProps) {
+export function Screen({
+  expanded,
+  onToggleExpanded,
+  store,
+  lab,
+  device,
+  conditions,
+  scrollRef,
+  children,
+}: ScreenProps) {
   const engine = useEngine();
   const inFlight = useSimulation((s) => s.stats.inFlight);
   const offline = useSimulation((s) => s.config.network.offline);
@@ -118,6 +131,22 @@ export function Screen({ store, lab, device, conditions, scrollRef, children }: 
             <li className="font-pixel text-[10px] text-cream/70">ALL CONDITIONS NORMAL</li>
           )}
         </ul>
+        {onToggleExpanded && (
+          <ToyButton
+            size="sm"
+            tone={expanded ? 'sun' : 'paper'}
+            aria-pressed={expanded}
+            onClick={onToggleExpanded}
+            className="h-8 flex-none px-2.5"
+          >
+            {expanded ? (
+              <Minimize2 size={14} strokeWidth={2.8} aria-hidden="true" />
+            ) : (
+              <Maximize2 size={14} strokeWidth={2.8} aria-hidden="true" />
+            )}
+            {expanded ? 'Shrink store' : 'Expand store'}
+          </ToyButton>
+        )}
       </div>
 
       <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-[12px] border-2 border-toy-ink bg-white">

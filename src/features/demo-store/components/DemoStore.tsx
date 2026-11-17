@@ -119,8 +119,8 @@ export function DemoStore({ store, scrollRef, onRenderedCountChange }: DemoStore
 
       <div aria-busy={loading} className="flex-1">
         {loading && (
-          <div className="grid grid-cols-3 items-start gap-4 px-5 pt-1.5 pb-7 @max-lg/store:grid-cols-2 @max-lg/store:gap-2.5 @max-lg/store:px-3 @max-lg/store:pb-4">
-            {Array.from({ length: Math.max(1, Math.min(itemCount, 6)) }, (_, i) => (
+          <div className="grid grid-cols-3 items-start gap-4 px-5 pt-1.5 pb-7 @max-lg/store:grid-cols-2 @max-lg/store:gap-2.5 @max-lg/store:px-3 @max-lg/store:pb-4 @min-[56rem]/store:grid-cols-4 @min-[80rem]/store:grid-cols-5 @min-[102rem]/store:grid-cols-6">
+            {Array.from({ length: Math.max(1, Math.min(itemCount, 8)) }, (_, i) => (
               <SkeletonCard key={i} />
             ))}
           </div>
