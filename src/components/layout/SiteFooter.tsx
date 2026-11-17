@@ -9,7 +9,7 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-[1280px] flex-wrap items-center gap-x-6 gap-y-3 px-4 py-7 site-md:px-10">
         <Logo />
         <span className="font-pixel text-[11px] text-toy-ink-2">
-          MAKE THE WEB MISBEHAVE · BUILT BY [YOUR NAME]
+          MAKE THE WEB MISBEHAVE · BUILT BY GEORGE STEFANOPOULOS
         </span>
         <div className="flex-1" />
         <nav aria-label="Footer" className="flex gap-1">

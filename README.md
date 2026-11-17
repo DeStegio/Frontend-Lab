@@ -9,6 +9,8 @@ click on the extinguisher puts everything back.
 
 **Live demo:** https://destegio.github.io/Frontend-Lab/
 
+Designed and built by George Stefanopoulos.
+
 ![The playground with a flaky API: packets on the wire, a sweating server and a narrated incident log](docs/screenshots/playground.png)
 
 | Chaos mode                                                                                            | Phone layout                                                       |
