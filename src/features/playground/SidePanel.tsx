@@ -61,28 +61,30 @@ export function IncidentLog({
       >
         Incident log
       </h2>
-      <ol role="log" className="m-0 min-h-0 flex-1 list-none overflow-auto p-0">
-        {incidents.map((i) => (
-          <li
-            key={i.id}
-            className="flex animate-tin gap-2 border-b-2 border-dashed border-toy-ink/12 px-3 py-2"
-          >
-            <span
-              aria-hidden="true"
-              className={cn(
-                'mt-1 size-2.5 flex-none rounded-full border-2 border-toy-ink',
-                toneDot[i.tone],
-              )}
-            />
-            <div className="min-w-0">
-              <time className="block font-pixel text-[9px] text-toy-ink-3">{clock(i.at)}</time>
-              <p className="m-0 font-toy text-[13px] leading-snug font-medium text-toy-ink">
-                {i.text}
-              </p>
-            </div>
-          </li>
-        ))}
-      </ol>
+      <div role="log" className="min-h-0 flex-1 overflow-auto">
+        <ol className="m-0 list-none p-0">
+          {incidents.map((i) => (
+            <li
+              key={i.id}
+              className="flex animate-tin gap-2 border-b-2 border-dashed border-toy-ink/12 px-3 py-2"
+            >
+              <span
+                aria-hidden="true"
+                className={cn(
+                  'mt-1 size-2.5 flex-none rounded-full border-2 border-toy-ink',
+                  toneDot[i.tone],
+                )}
+              />
+              <div className="min-w-0">
+                <time className="block font-pixel text-[9px] text-toy-ink-3">{clock(i.at)}</time>
+                <p className="m-0 font-toy text-[13px] leading-snug font-medium text-toy-ink">
+                  {i.text}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
     </section>
   );
 }
