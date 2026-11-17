@@ -1,0 +1,256 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/manrope';
+@import '@fontsource-variable/jetbrains-mono';
+
+/*
+ * Design tokens: mirror "Design system · 01 Tokens".
+ * Tailwind exposes each as a utility (bg-surface, text-ink-2, rounded-lg, shadow-2…)
+ * and as a CSS variable (--color-accent…).
+ */
+@theme static {
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  --color-paper: #f4f5f8;
+  --color-stage: #e8ebf1;
+  --color-surface: #ffffff;
+  --color-surface-2: #f7f8fa;
+  --color-line: #e1e4eb;
+  --color-line-2: #ccd1db;
+  --color-line-hover: #aeb5c3;
+
+  --color-ink: #161a2c;
+  --color-ink-hover: #2b3049;
+  --color-ink-2: #454b62;
+  --color-ink-3: #5f6680;
+  --color-muted: #8a90a6;
+
+  --color-accent: #5546e8;
+  --color-accent-hover: #4536d6;
+  --color-accent-soft: #eeecff;
+  --color-accent-line: #c9c3fb;
+  --color-accent-ink: #3b2ec0;
+
+  --color-mint: #b8e8d0;
+  --color-mint-soft: #e6f6ee;
+  --color-mint-line: #a9dcc2;
+  --color-mint-ink: #0b6b44;
+
+  --color-amber: #ffd487;
+  --color-amber-soft: #fff3da;
+  --color-amber-line: #f2d08e;
+  --color-amber-ink: #8a4b00;
+  --color-amber-strong: #b86e00;
+
+  --color-coral: #ff7778;
+  --color-coral-soft: #ffe6e5;
+  --color-coral-line: #f6b3b3;
+  --color-coral-ink: #b3202e;
+  --color-coral-strong: #e0434b;
+  --color-coral-shadow: #ffc9c9;
+
+  /* Technical details panel (dark) */
+  --color-diag-line: #2c3150;
+  --color-diag-raised: #2a2f4a;
+  --color-diag-text: #e6e8f0;
+  --color-diag-muted: #9ea4bc;
+  --color-diag-ok: #7ee2b0;
+  --color-diag-bad: #ff9c9c;
+  --color-diag-off: #ffd487;
+
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+
+  --shadow-1: 0 1px 2px rgba(22, 26, 44, 0.06);
+  --shadow-2: 0 1px 2px rgba(22, 26, 44, 0.05), 0 6px 16px rgba(22, 26, 44, 0.07);
+  --shadow-3: 0 2px 6px rgba(22, 26, 44, 0.05), 0 18px 44px rgba(22, 26, 44, 0.12);
+
+  --font-sans: 'Manrope Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  --ease-lab: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Breakpoints: marketing pages (site-*) and the playground (lab-*) follow the design. */
+  --breakpoint-lab-md: 40rem; /* 640 */
+  --breakpoint-site-md: 43.8125rem; /* 701 */
+  --breakpoint-lab-lg: 68.75rem; /* 1100 */
+  --breakpoint-site-lg: 73.8125rem; /* 1181 */
+
+  --animate-tin: tin 0.25s var(--ease-lab) both;
+  --animate-fade-in: fade-in 0.2s;
+  --animate-sheet-in: sheet-in 0.28s var(--ease-lab);
+  --animate-bump: bump 0.3s var(--ease-lab);
+  --animate-shake: shake 0.35s;
+  --animate-spin: spin 0.7s linear infinite;
+  --animate-shimmer: shimmer 1.4s linear infinite;
+  --animate-pulse-ring: pulse-ring 1.4s var(--ease-lab) infinite;
+
+  @keyframes tin {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes sheet-in {
+    from {
+      transform: translateY(40px);
+      opacity: 0;
+    }
+  }
+  @keyframes bump {
+    40% {
+      transform: scale(1.25);
+    }
+  }
+  @keyframes shake {
+    20% {
+      transform: translateX(-3px);
+    }
+    40% {
+      transform: translateX(3px);
+    }
+    60% {
+      transform: translateX(-2px);
+    }
+    80% {
+      transform: translateX(2px);
+    }
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes shimmer {
+    to {
+      background-position: -200% 0;
+    }
+  }
+  @keyframes pulse-ring {
+    0% {
+      box-shadow: 0 0 0 0 rgba(85, 70, 232, 0.45);
+    }
+    80% {
+      box-shadow: 0 0 0 7px rgba(85, 70, 232, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(85, 70, 232, 0);
+    }
+  }
+}
+
+/* Styles that apply when the playground runs in its phone layout (set via data-device). */
+@custom-variant lab-mobile (&:where([data-device='mobile'] *));
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+  body {
+    margin: 0;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Controls whose pseudo-elements and native parts can't be expressed with utilities. */
+@layer components {
+  .lab-switch {
+    appearance: none;
+    position: relative;
+    flex: none;
+    width: 42px;
+    height: 24px;
+    margin: 0;
+    border-radius: 999px;
+    background: var(--color-muted);
+    cursor: pointer;
+    transition: background 0.18s;
+  }
+  .lab-switch::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    transition: transform 0.2s var(--ease-lab);
+  }
+  .lab-switch:checked {
+    background: var(--color-accent);
+  }
+  .lab-switch:checked::after {
+    transform: translateX(18px);
+  }
+  .lab-switch[data-tone='danger']:checked {
+    background: var(--color-coral-strong);
+  }
+  .lab-switch:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .lab-range {
+    width: 100%;
+    height: 22px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--color-accent);
+  }
+  .lab-range[data-level='warn'] {
+    accent-color: var(--color-amber-strong);
+  }
+  .lab-range[data-level='hot'] {
+    accent-color: var(--color-coral-strong);
+  }
+
+  .lab-skeleton {
+    background: linear-gradient(90deg, #f0f2f5 0%, #e5e8ee 50%, #f0f2f5 100%);
+    background-size: 200% 100%;
+    animation: var(--animate-shimmer);
+  }
+
+  .lab-dots {
+    background: var(--color-stage) radial-gradient(#d3d8e2 1px, transparent 1.2px) 0 0 / 20px 20px;
+  }
+}
