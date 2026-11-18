@@ -84,6 +84,17 @@ test.describe('playground', () => {
     await expect(sheet).toBeHidden();
   });
 
+  test('taps inside the sheet keep it open; the backdrop closes it', async ({ page, isMobile }) => {
+    test.skip(!isMobile, 'Phone layout only');
+    await openControls(page, isMobile);
+    const sheet = page.getByRole('dialog', { name: 'Lab controls' });
+    const box = (await sheet.boundingBox())!;
+    await page.mouse.click(box.x + 4, box.y + box.height / 2); // the sheet's own edge padding
+    await expect(sheet).toBeVisible();
+    await page.mouse.click(box.x + box.width / 2, Math.max(4, box.y - 40)); // backdrop above it
+    await expect(sheet).toBeHidden();
+  });
+
   test('extreme content stays inside the screen', async ({ page, isMobile }) => {
     await openControls(page, isMobile);
     await page.getByRole('button', { name: 'Wordy' }).click();
