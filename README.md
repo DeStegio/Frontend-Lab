@@ -27,7 +27,8 @@ Designed and built by George Stefanopoulos.
 | **Chaos**    | intensity mild / heavy / extreme / absurd, seed, randomize             | A 3-2-1 countdown, then every condition at once, generated from the seed.                                                     |
 
 Quick modes (Calm, Slow network, Flaky API, Rush hour, Wordy) replace all conditions in one press.
-Every condition shows up as a removable sticker on the screen bezel.
+Every condition shows up as a removable sticker on the screen bezel. **Expand store** lets the
+screen take the whole stage; the product grid uses 2 to 6 columns depending on its own width.
 
 The lab makes the simulation visible:
 
@@ -122,6 +123,17 @@ The lab represents extreme workloads without performing them literally:
 | Log entries / toasts / incidents | 80 / 40 / 30            | oldest dropped                                                               |
 | Packets drawn on the wire        | 24                      | summarised by the LED counter                                                |
 | Product cards in the DOM         | visible rows + overscan | the grid is virtualized with measured rows                                   |
+
+Measured on the production build in Chromium (1440×900), 12 seconds of **Absurd** chaos
+(10,000 logical clicks, bursts up to ×100, 240 items, maximum text expansion):
+
+| Metric                          | Result                  |
+| ------------------------------- | ----------------------- |
+| Frame rate                      | 56 fps                  |
+| Long tasks (> 50 ms)            | 0                       |
+| Reset response while chaos runs | ~100 ms                 |
+| JS heap                         | ~10 MB                  |
+| DOM nodes                       | ~440 (virtualized grid) |
 
 Generated content is plain strings rendered as text, so mutations cannot inject markup. The store
 scrolls and overflows inside its own frame; the page around it never moves (checked in e2e at
