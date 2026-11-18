@@ -178,7 +178,10 @@ describe('Playground', () => {
     const panel = screen.getByRole('region', { name: 'Technical details' });
     expect(within(panel).getByRole('table', { name: /Request log/ })).toBeInTheDocument();
     expect(within(panel).getByText('/api/products?category=all&limit=12')).toBeInTheDocument();
+    expect(within(panel).getByRole('button', { name: 'Close technical details' })).toHaveFocus();
     await user.keyboard('{Escape}');
     expect(screen.queryByRole('region', { name: 'Technical details' })).not.toBeInTheDocument();
+    // Focus returns to the toggle that opened the panel.
+    expect(screen.getByRole('button', { name: 'Technical details' })).toHaveFocus();
   });
 });

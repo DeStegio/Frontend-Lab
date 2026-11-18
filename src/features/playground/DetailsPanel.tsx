@@ -31,7 +31,14 @@ export function DetailsPanel({ device, renderedCards, totalItems, onClose }: Det
   const log = useSimulation((s) => s.log);
   const seed = useSimulation((s) => s.config.chaos.seed);
   const closeRef = useRef<HTMLButtonElement>(null);
-  useEffect(() => closeRef.current?.focus(), []);
+  // Focus moves into the panel on open and back to whatever opened it on close.
+  useEffect(() => {
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    closeRef.current?.focus();
+    return () => {
+      if (opener?.isConnected) opener.focus();
+    };
+  }, []);
 
   const settled = stats.succeeded + stats.failed;
   const simulated = stats.simulatedActions;
